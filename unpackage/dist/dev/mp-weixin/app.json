@@ -1,0 +1,44 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/My/My",
+    "pages/intro/intro",
+    "components/myProfile",
+    "components/myCollection",
+    "components/myLike",
+    "components/contactDev",
+    "pages/comment/comment"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "微信",
+    "navigationBarBackgroundColor": "#f8b7f7",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#2c2c2c",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/comment/comment",
+        "text": "测试"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "闲话茶楼",
+        "iconPath": "/icon/_home.png",
+        "selectedIconPath": "/icon/home.png"
+      },
+      {
+        "pagePath": "pages/My/My",
+        "text": "我的",
+        "iconPath": "/icon/_my.png",
+        "selectedIconPath": "/icon/my.png"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

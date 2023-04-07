@@ -1,0 +1,90 @@
+
+.container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+.comment-list {
+	flex: 1;
+	overflow-y: scroll;
+}
+.comment-item {
+	display: flex;
+	padding: 10px;
+	border-bottom: 1px solid #eee;
+}
+.avatar {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+}
+.content {
+	flex: 1;
+	margin-left: 10px;
+}
+.nickname {
+	font-size: 16px;
+	font-weight: bold;
+}
+.text {
+	margin-top: 5px;
+}
+.images {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 5px;
+}
+.image-item {
+	width: calc(33.33% - 10px);
+	height: calc(33.33% - 10px);
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+.actions {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 5px;
+}
+.time {
+	color: #999;
+}
+.buttons {
+	display: flex;
+}
+.button-item {
+	display: flex;
+	align-items: center;
+	margin-left: 10px;
+}
+.iconfont {
+	font-size: 18px;
+}
+.icon-like {
+	color: #999;
+}
+.icon-liked {
+	color: #f00;
+}
+.comment-input {
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	border-top: 1px solid #eee;
+}
+input {
+	flex: 1;
+	height: 40px;
+	padding: 0 10px;
+	border: 1px solid #ccc;
+	border-radius: 20px;
+}
+button {
+	width: 60px;
+	height: 40px;
+	margin-left: 10px;
+	background-color: #0099ff;
+	color: #fff;
+	border-radius: 20px;
+}
+

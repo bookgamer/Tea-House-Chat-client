@@ -1,0 +1,91 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "闲话茶楼"
+			}
+		}, {
+			"path": "pages/My/My",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
+			}
+
+		},
+		{
+			"path": "pages/intro/intro",
+			"style": {
+				"navigationBarTitleText": "闲话茶楼",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "components/myProfile",
+			"style": {
+				"navigationBarTitleText": "我的资料",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "components/myCollection",
+			"style": {
+				"navigationBarTitleText": "我的收藏",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "components/myLike",
+			"style": {
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "components/contactDev",
+			"style": {
+				"navigationBarTitleText": "闲话茶楼",
+				"enablePullDownRefresh": false
+			}
+		}
+        ,{
+            "path" : "pages/comment/comment",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "微信",
+		"navigationBarBackgroundColor": "#f8b7f7",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#2c2c2c",
+		"borderStyle": "white",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/comment/comment",
+				"text": "测试"
+			},
+			{
+				"pagePath": "pages/index/index",
+				"text": "闲话茶楼",
+				"iconPath": "/icon/_home.png",
+				"selectedIconPath": "/icon/home.png"
+			},
+			{
+				"pagePath": "pages/My/My",
+				"text": "我的",
+				"iconPath": "/icon/_my.png",
+				"selectedIconPath": "/icon/my.png"
+			}
+		]
+		},
+		"uniIdRouter": {}
+	}

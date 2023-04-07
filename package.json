@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "sass": "^1.60.0",
+    "sass-loader": "^13.2.1"
+  },
+  "globalStyle": {
+      "app-plus": {
+        "minSdkVersion": "22407"
+      }
+    }
+}
+
