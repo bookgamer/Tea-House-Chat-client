@@ -42,7 +42,7 @@
 		},
 		onLoad(options) {
 		  wx.request({
-			  url: 'http://127.0.0.1:8081/index/getData',
+			  url: 'http://localhost:8081/index/getData',
 			  success: (res) => {
 				this.list = res.data
 			}

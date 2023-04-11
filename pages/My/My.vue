@@ -43,7 +43,7 @@
 				我的收藏
 			</navigator>
 			<navigator
-				url="../../components/myLike"
+				url="../../components/publishArticle"
 				class="link">
 				发布文章
 			</navigator>

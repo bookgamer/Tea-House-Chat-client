@@ -35,7 +35,7 @@
 			}
 		},
 		{
-			"path": "components/myLike",
+			"path": "components/publishArticle",
 			"style": {
 				"enablePullDownRefresh": false
 			}
@@ -70,7 +70,7 @@
 		"backgroundColor": "#ffffff",
 		"list": [
 			{
-				"pagePath": "pages/comment/comment",
+				"pagePath": "components/publishArticle",
 				"text": "测试"
 			},
 			{

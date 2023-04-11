@@ -5,7 +5,7 @@
     "pages/intro/intro",
     "components/myProfile",
     "components/myCollection",
-    "components/myLike",
+    "components/publishArticle",
     "components/contactDev",
     "pages/comment/comment"
   ],
@@ -23,7 +23,7 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "pagePath": "pages/comment/comment",
+        "pagePath": "components/publishArticle",
         "text": "测试"
       },
       {

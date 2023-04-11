@@ -238,11 +238,51 @@ exports.default = void 0;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var _default = {
   data: function data() {
     return {
-      inputText: "",
-      likeCount: 0,
+      inputText: '',
       loading: true,
       // 是否正在加载文章
       article: {},
@@ -253,7 +293,7 @@ var _default = {
       // 是否已经点赞
       isCollected: false,
       // 是否已经收藏
-      content: "",
+      content: '',
       id: 0
     };
   },
@@ -262,7 +302,7 @@ var _default = {
     this.getArticle(options.id);
     this.getCommentList(options.id);
     this.collect(options.id);
-    this.like(options.id);
+    this.getLike();
     this.id = options.id;
   },
   methods: {
@@ -315,7 +355,7 @@ var _default = {
       var _this2 = this;
       // 发送请求获取文章内容
       uni.request({
-        url: "http://127.0.0.1:8081/api/article?id=".concat(id),
+        url: "http://localhost:8081/api/article?id=".concat(id),
         success: function success(res) {
           // 请求成功则将文章内容赋值给 article 变量，同时将 loading 变量置为 false
           _this2.article = res.data;
@@ -331,28 +371,28 @@ var _default = {
       var _this3 = this;
       // 发送请求获取评论列表
       uni.request({
-        url: "http://127.0.0.1:8081/api/comments?id=".concat(id),
+        url: "http://localhost:8081/api/comments?id=".concat(id),
         success: function success(res) {
           res.data.forEach(function (item) {
             // 获取每个对象中的time字段
             var time1 = item.time;
             // 计算时间差并格式化时间
-            var date1 = new Date(time1.replace(/-/g, "/"));
+            var date1 = new Date(time1.replace(/-/g, '/'));
             var date2 = new Date();
             var diff = date2.getTime() - date1.getTime();
             var seconds = Math.floor(diff / 1000);
             var minutes = Math.floor(seconds / 60);
             var hours = Math.floor(minutes / 60);
             var days = Math.floor(hours / 24);
-            var result = "";
+            var result = '';
             if (days > 0) {
-              result = days + "天前";
+              result = days + '天前';
             } else if (hours > 0) {
-              result = hours + "小时前";
+              result = hours + '小时前';
             } else if (minutes > 0) {
-              result = minutes + "分钟前";
+              result = minutes + '分钟前';
             } else {
-              result = seconds + "秒前";
+              result = seconds + '秒前';
             }
             // 修改每个对象中的time字段
             item.time = result;
@@ -366,41 +406,28 @@ var _default = {
         }
       });
     },
-    like: function like(id) {
+    like: function like() {
       var _this4 = this;
       wx.getStorage({
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: 'http://127.0.0.1:8081/api/like',
+            url: 'http://localhost:8081/api/like',
             method: 'POST',
             data: {
-              articleId: id,
+              articleId: _this4.id,
               userId: res.data
             },
-            success: function success(res) {
+            success: function success(res1) {
               if (_this4.isLiked) {
                 _this4.isLiked = false;
               } else {
                 _this4.isLiked = true;
               }
+              _this4.getArticle(_this4.id);
             },
             fail: function fail(err) {
               console.log('点赞失败，错误信息：', err);
-            }
-          });
-        },
-        share: function share() {
-          // 分享
-          // 这里使用uni-app的分享功能，将文章内容进行分享
-          uni.share({
-            title: this.article.title,
-            content: this.article.content,
-            success: function success(res) {
-              uni.showToast({
-                title: '分享成功',
-                icon: 'success'
-              });
             }
           });
         },
@@ -413,21 +440,65 @@ var _default = {
         }
       });
     },
-    collect: function collect(id) {
+    getLike: function getLike() {
       var _this5 = this;
+      wx.getStorage({
+        key: 'userId',
+        success: function success(res) {
+          uni.request({
+            url: 'http://localhost:8081/api/like',
+            method: 'GET',
+            data: {
+              articleId: _this5.id,
+              userId: res.data
+            },
+            success: function success(res1) {
+              console.log("查询点赞，后端返回数据" + res1.data);
+              _this5.isLiked = res1.data;
+            },
+            fail: function fail(err) {
+              console.log('查询点赞接口报错，错误信息：', err);
+            }
+          });
+        },
+        fail: function fail(err) {
+          uni.showToast({
+            title: '请登录',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+    },
+    share: function share() {
+      // 分享
+      // 这里使用uni-app的分享功能，将文章内容进行分享
+      uni.share({
+        title: this.article.title,
+        content: this.article.content,
+        success: function success(res) {
+          uni.showToast({
+            title: '分享成功',
+            icon: 'success'
+          });
+        }
+      });
+    },
+    collect: function collect(id) {
+      var _this6 = this;
       console.log('发送收藏请求，id:' + id);
       uni.request({
-        url: 'http://127.0.0.1:8081/api/collect',
+        url: 'http://localhost:8081/api/collect',
         method: 'POST',
         data: {
           id: id
         },
         success: function success(res) {
           console.log('收藏成功，响应结果：', res);
-          if (_this5.isCollected) {
-            _this5.isCollected = false;
+          if (_this6.isCollected) {
+            _this6.isCollected = false;
           } else {
-            _this5.isCollected = true;
+            _this6.isCollected = true;
           }
         },
         fail: function fail(err) {
