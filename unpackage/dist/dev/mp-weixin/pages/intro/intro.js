@@ -276,13 +276,9 @@ exports.default = void 0;
 //
 //
 //
-//
-//
-//
 var _default = {
   data: function data() {
     return {
-      inputText: '',
       loading: true,
       // 是否正在加载文章
       article: {},
@@ -294,16 +290,19 @@ var _default = {
       isCollected: false,
       // 是否已经收藏
       content: '',
+      // 评论内容
       id: 0
     };
   },
   onLoad: function onLoad(options) {
     // 页面加载时向后端发送请求获取文章内容和评论列表
+    console.log("开始请求页面加载所需要的数据");
     this.getArticle(options.id);
     this.getCommentList(options.id);
     this.collect(options.id);
     this.getLike();
     this.id = options.id;
+    console.log("请求页面所需要的数据加载完毕");
   },
   methods: {
     onInput: function onInput(e) {
@@ -316,20 +315,20 @@ var _default = {
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: "http://localhost:8081/api/Addcomments?userId=".concat(res.data),
+            url: "http://62dde50d.r10.cpolar.top/api/Addcomments?userId=".concat(res.data),
             method: 'POST',
             data: {
               articleId: _this.id,
               content: _this.content
             },
             success: function success(res) {
-              // 添加评论成功后，隐藏弹出框并清空评论内容
+              // 添加评论成功后，清空评论内容
               uni.showToast({
                 title: '评论成功',
                 icon: 'success',
                 duration: 2000
               });
-              _this.showPopup = false;
+              _this.content = "";
               _this.getCommentList(_this.id);
             },
             fail: function fail(err) {
@@ -355,7 +354,7 @@ var _default = {
       var _this2 = this;
       // 发送请求获取文章内容
       uni.request({
-        url: "http://localhost:8081/api/article?id=".concat(id),
+        url: "http://62dde50d.r10.cpolar.top/api/article?id=".concat(id),
         success: function success(res) {
           // 请求成功则将文章内容赋值给 article 变量，同时将 loading 变量置为 false
           _this2.article = res.data;
@@ -370,39 +369,81 @@ var _default = {
     getCommentList: function getCommentList(id) {
       var _this3 = this;
       // 发送请求获取评论列表
-      uni.request({
-        url: "http://localhost:8081/api/comments?id=".concat(id),
-        success: function success(res) {
-          res.data.forEach(function (item) {
-            // 获取每个对象中的time字段
-            var time1 = item.time;
-            // 计算时间差并格式化时间
-            var date1 = new Date(time1.replace(/-/g, '/'));
-            var date2 = new Date();
-            var diff = date2.getTime() - date1.getTime();
-            var seconds = Math.floor(diff / 1000);
-            var minutes = Math.floor(seconds / 60);
-            var hours = Math.floor(minutes / 60);
-            var days = Math.floor(hours / 24);
-            var result = '';
-            if (days > 0) {
-              result = days + '天前';
-            } else if (hours > 0) {
-              result = hours + '小时前';
-            } else if (minutes > 0) {
-              result = minutes + '分钟前';
-            } else {
-              result = seconds + '秒前';
+      wx.getStorage({
+        key: 'userId',
+        success: function success(res1) {
+          uni.request({
+            url: "http://62dde50d.r10.cpolar.top/api/comments?id=".concat(id, "&userId=").concat(res1.data),
+            success: function success(res) {
+              res.data.forEach(function (item) {
+                // 获取每个对象中的time字段
+                var time1 = item.time;
+                // 计算时间差并格式化时间
+                var date1 = new Date(time1.replace(/-/g, '/'));
+                var date2 = new Date();
+                var diff = date2.getTime() - date1.getTime();
+                var seconds = Math.floor(diff / 1000);
+                var minutes = Math.floor(seconds / 60);
+                var hours = Math.floor(minutes / 60);
+                var days = Math.floor(hours / 24);
+                var result = '';
+                if (days > 0) {
+                  result = days + '天前';
+                } else if (hours > 0) {
+                  result = hours + '小时前';
+                } else if (minutes > 0) {
+                  result = minutes + '分钟前';
+                } else {
+                  result = seconds + '秒前';
+                }
+                // 修改每个对象中的time字段
+                item.time = result;
+              });
+              // 请求成功则将评论列表赋值给comments变量
+              _this3.comments = res.data;
+              console.log(_this3.comments);
+            },
+            fail: function fail(error) {
+              console.error(error);
             }
-            // 修改每个对象中的time字段
-            item.time = result;
           });
-          // 请求成功则将评论列表赋值给comments变量
-          _this3.comments = res.data;
-          console.log(_this3.comments);
         },
-        fail: function fail(error) {
-          console.error(error);
+        fail: function fail(err) {
+          uni.request({
+            url: "http://62dde50d.r10.cpolar.top/api/comments?id=".concat(id, "&userId=0"),
+            success: function success(res) {
+              res.data.forEach(function (item) {
+                // 获取每个对象中的time字段
+                var time1 = item.time;
+                // 计算时间差并格式化时间
+                var date1 = new Date(time1.replace(/-/g, '/'));
+                var date2 = new Date();
+                var diff = date2.getTime() - date1.getTime();
+                var seconds = Math.floor(diff / 1000);
+                var minutes = Math.floor(seconds / 60);
+                var hours = Math.floor(minutes / 60);
+                var days = Math.floor(hours / 24);
+                var result = '';
+                if (days > 0) {
+                  result = days + '天前';
+                } else if (hours > 0) {
+                  result = hours + '小时前';
+                } else if (minutes > 0) {
+                  result = minutes + '分钟前';
+                } else {
+                  result = seconds + '秒前';
+                }
+                // 修改每个对象中的time字段
+                item.time = result;
+              });
+              // 请求成功则将评论列表赋值给comments变量
+              _this3.comments = res.data;
+              console.log(_this3.comments);
+            },
+            fail: function fail(error) {
+              console.error(error);
+            }
+          });
         }
       });
     },
@@ -412,7 +453,7 @@ var _default = {
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: 'http://localhost:8081/api/like',
+            url: 'http://62dde50d.r10.cpolar.top/api/like',
             method: 'POST',
             data: {
               articleId: _this4.id,
@@ -446,14 +487,14 @@ var _default = {
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: 'http://localhost:8081/api/like',
+            url: 'http://62dde50d.r10.cpolar.top/api/like',
             method: 'GET',
             data: {
               articleId: _this5.id,
               userId: res.data
             },
             success: function success(res1) {
-              console.log("查询点赞，后端返回数据" + res1.data);
+              console.log('查询点赞，后端返回数据' + res1.data);
               _this5.isLiked = res1.data;
             },
             fail: function fail(err) {
@@ -473,22 +514,18 @@ var _default = {
     share: function share() {
       // 分享
       // 这里使用uni-app的分享功能，将文章内容进行分享
-      uni.share({
-        title: this.article.title,
-        content: this.article.content,
-        success: function success(res) {
-          uni.showToast({
-            title: '分享成功',
-            icon: 'success'
-          });
-        }
-      });
+      var that = this;
+      return {
+        title: that.article.title,
+        imageUrl: that.article.src,
+        path: '/pages/article/index?id=' + that.id
+      };
     },
     collect: function collect(id) {
       var _this6 = this;
       console.log('发送收藏请求，id:' + id);
       uni.request({
-        url: 'http://localhost:8081/api/collect',
+        url: 'http://62dde50d.r10.cpolar.top/api/collect',
         method: 'POST',
         data: {
           id: id
@@ -503,6 +540,35 @@ var _default = {
         },
         fail: function fail(err) {
           console.log('收藏失败，错误信息：', err);
+        }
+      });
+    },
+    toggleLike: function toggleLike(comment) {
+      var _this7 = this;
+      wx.getStorage({
+        key: 'userId',
+        success: function success(res) {
+          uni.request({
+            url: 'http://62dde50d.r10.cpolar.top/api/CommentLikes',
+            method: 'POST',
+            data: {
+              commentId: comment.id,
+              userId: res.data
+            },
+            success: function success(res1) {
+              _this7.getCommentList(_this7.id);
+            },
+            fail: function fail(err) {
+              console.log('查询评论接口报错，错误信息：', err);
+            }
+          });
+        },
+        fail: function fail(err) {
+          uni.showToast({
+            title: '请登录',
+            icon: 'none',
+            duration: 2000
+          });
         }
       });
     }

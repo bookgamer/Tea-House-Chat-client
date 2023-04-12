@@ -233,7 +233,7 @@ var _default = {
         // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
         success: function success(res) {
           uni.request({
-            url: 'http://localhost:8081/login',
+            url: 'http://62dde50d.r10.cpolar.top/login',
             method: 'POST',
             data: {
               avatarUrl: res.userInfo.avatarUrl,

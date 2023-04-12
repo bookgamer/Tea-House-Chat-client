@@ -19,12 +19,9 @@
 						<!-- 点赞 -->
 						<view class="like-count">{{ article.likes }}</view>
 					</view>
-					<view
-						class="action"
-						@click="share">
-						<image src="../../icon/share.png" />
-						<!-- 分享 -->
-					</view>
+					<button open-type="share" class="action">
+					  分享
+					</button>
 					<view
 						class="action"
 						@click="collect">
@@ -54,7 +51,7 @@
 					<input
 						type="text"
 						placeholder="写下你的评论..."
-						v-model.trim="inputText"
+						v-model.trim="content"
 						@confirm="submitComment" />
 					<button @tap="submitComment">发送</button>
 				</view>
@@ -124,25 +121,25 @@
 	export default {
 		data() {
 			return {
-				inputText: '',
 				loading: true, // 是否正在加载文章
 				article: {}, // 文章内容
 				comments: [], // 评论列表
 				isLiked: false, // 是否已经点赞
 				isCollected: false, // 是否已经收藏
-				content: '',
+				content: '', // 评论内容
 				id: 0
 			}
 		},
 		onLoad(options) {
 			// 页面加载时向后端发送请求获取文章内容和评论列表
+			console.log("开始请求页面加载所需要的数据")
 			this.getArticle(options.id)
 			this.getCommentList(options.id)
 			this.collect(options.id)
 			this.getLike()
 			this.id = options.id
+			console.log("请求页面所需要的数据加载完毕")
 		},
-
 		methods: {
 			onInput(e) {
 				this.textNum = e.detail.value.length
@@ -153,20 +150,20 @@
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: `http://localhost:8081/api/Addcomments?userId=${res.data}`,
+							url: `http://62dde50d.r10.cpolar.top/api/Addcomments?userId=${res.data}`,
 							method: 'POST',
 							data: {
 								articleId: this.id,
 								content: this.content
 							},
 							success: res => {
-								// 添加评论成功后，隐藏弹出框并清空评论内容
+								// 添加评论成功后，清空评论内容
 								uni.showToast({
 									title: '评论成功',
 									icon: 'success',
 									duration: 2000
 								})
-								this.showPopup = false
+								this.content = ""
 								this.getCommentList(this.id)
 							},
 							fail: err => {
@@ -191,7 +188,7 @@
 			getArticle(id) {
 				// 发送请求获取文章内容
 				uni.request({
-					url: `http://localhost:8081/api/article?id=${id}`,
+					url: `http://62dde50d.r10.cpolar.top/api/article?id=${id}`,
 					success: res => {
 						// 请求成功则将文章内容赋值给 article 变量，同时将 loading 变量置为 false
 						this.article = res.data
@@ -205,39 +202,81 @@
 			},
 			getCommentList(id) {
 				// 发送请求获取评论列表
-				uni.request({
-					url: `http://localhost:8081/api/comments?id=${id}`,
-					success: res => {
-						res.data.forEach(item => {
-							// 获取每个对象中的time字段
-							var time1 = item.time
-							// 计算时间差并格式化时间
-							var date1 = new Date(time1.replace(/-/g, '/'))
-							var date2 = new Date()
-							var diff = date2.getTime() - date1.getTime()
-							var seconds = Math.floor(diff / 1000)
-							var minutes = Math.floor(seconds / 60)
-							var hours = Math.floor(minutes / 60)
-							var days = Math.floor(hours / 24)
-							var result = ''
-							if (days > 0) {
-								result = days + '天前'
-							} else if (hours > 0) {
-								result = hours + '小时前'
-							} else if (minutes > 0) {
-								result = minutes + '分钟前'
-							} else {
-								result = seconds + '秒前'
+				wx.getStorage({
+					key: 'userId',
+					success: res1 => {
+						uni.request({
+							url: `http://62dde50d.r10.cpolar.top/api/comments?id=${id}&userId=${res1.data}`,
+							success: res => {
+								res.data.forEach(item => {
+									// 获取每个对象中的time字段
+									var time1 = item.time
+									// 计算时间差并格式化时间
+									var date1 = new Date(time1.replace(/-/g, '/'))
+									var date2 = new Date()
+									var diff = date2.getTime() - date1.getTime()
+									var seconds = Math.floor(diff / 1000)
+									var minutes = Math.floor(seconds / 60)
+									var hours = Math.floor(minutes / 60)
+									var days = Math.floor(hours / 24)
+									var result = ''
+									if (days > 0) {
+										result = days + '天前'
+									} else if (hours > 0) {
+										result = hours + '小时前'
+									} else if (minutes > 0) {
+										result = minutes + '分钟前'
+									} else {
+										result = seconds + '秒前'
+									}
+									// 修改每个对象中的time字段
+									item.time = result
+								})
+								// 请求成功则将评论列表赋值给comments变量
+								this.comments = res.data
+								console.log(this.comments)
+							},
+							fail: error => {
+								console.error(error)
 							}
-							// 修改每个对象中的time字段
-							item.time = result
 						})
-						// 请求成功则将评论列表赋值给comments变量
-						this.comments = res.data
-						console.log(this.comments)
 					},
-					fail: error => {
-						console.error(error)
+					fail:err => {
+						uni.request({
+							url: `http://62dde50d.r10.cpolar.top/api/comments?id=${id}&userId=0`,
+							success: res => {
+								res.data.forEach(item => {
+									// 获取每个对象中的time字段
+									var time1 = item.time
+									// 计算时间差并格式化时间
+									var date1 = new Date(time1.replace(/-/g, '/'))
+									var date2 = new Date()
+									var diff = date2.getTime() - date1.getTime()
+									var seconds = Math.floor(diff / 1000)
+									var minutes = Math.floor(seconds / 60)
+									var hours = Math.floor(minutes / 60)
+									var days = Math.floor(hours / 24)
+									var result = ''
+									if (days > 0) {
+										result = days + '天前'
+									} else if (hours > 0) {
+										result = hours + '小时前'
+									} else if (minutes > 0) {
+										result = minutes + '分钟前'
+									} else {
+										result = seconds + '秒前'
+									}
+									// 修改每个对象中的time字段
+									item.time = result
+								})
+								// 请求成功则将评论列表赋值给comments变量
+								this.comments = res.data
+								console.log(this.comments)
+							},
+							fail: error => {
+								console.error(error)
+							}
+						})
 					}
 				})
 			},
@@ -246,7 +285,7 @@
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: 'http://localhost:8081/api/like',
+							url: 'http://62dde50d.r10.cpolar.top/api/like',
 							method: 'POST',
 							data: {
 								articleId: this.id,
@@ -274,19 +313,19 @@
 					}
 				})
 			},
-			getLike(){
+			getLike() {
 				wx.getStorage({
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: 'http://localhost:8081/api/like',
+							url: 'http://62dde50d.r10.cpolar.top/api/like',
 							method: 'GET',
 							data: {
 								articleId: this.id,
 								userId: res.data
 							},
 							success: res1 => {
-								console.log("查询点赞，后端返回数据"+res1.data)
+								console.log('查询点赞，后端返回数据' + res1.data)
 								this.isLiked = res1.data
 							},
 							fail: err => {
@@ -306,21 +345,17 @@
 			share() {
 				// 分享
 				// 这里使用uni-app的分享功能，将文章内容进行分享
-				uni.share({
-					title: this.article.title,
-					content: this.article.content,
-					success: res => {
-						uni.showToast({
-							title: '分享成功',
-							icon: 'success'
-						})
-					}
-				})
+				 let that = this;
+				  return {
+				    title: that.article.title,
+				    imageUrl: that.article.src,
+				    path: '/pages/article/index?id=' + that.id,
+				  }
 			},
 			collect(id) {
 				console.log('发送收藏请求，id:' + id)
 				uni.request({
-					url: 'http://localhost:8081/api/collect',
+					url: 'http://62dde50d.r10.cpolar.top/api/collect',
 					method: 'POST',
 					data: {
 						id: id
@@ -337,6 +372,34 @@
 						console.log('收藏失败，错误信息：', err)
 					}
 				})
+			},
+			toggleLike(comment) {
+				wx.getStorage({
+					key: 'userId',
+					success: res => {
+						uni.request({
+							url: 'http://62dde50d.r10.cpolar.top/api/CommentLikes',
+							method: 'POST',
+							data: {
+								commentId: comment.id,
+								userId: res.data
+							},
+							success: res1 => {
+								this.getCommentList(this.id)
+							},
+							fail: err => {
+								console.log('查询评论接口报错，错误信息：', err)
+							}
+						})
+					},
+					fail(err) {
+						uni.showToast({
+							title: '请登录',
+							icon: 'none',
+							duration: 2000
+						})
+					}
+				})
 			}
 		}
 	}
@@ -348,11 +411,31 @@
 		color: #666;
 		margin-left: 5px;
 	}
-
 	/* .container {
 	padding: 10rpx;
 } */
+	.icon-like:before {
+		content: '\2665'; /* 这是一个心形图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: #999;
+	}
 
+	.icon-liked:before {
+		content: '\2665'; /* 这是一个心形图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: red; /* 点赞时填充为红色 */
+	}
+	.icon-comment:before {
+		content: '\1F4AC'; /* 这是一个气泡图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: #999;
+	}
+
+	.icon-commented:before {
+		content: '\1F4AC'; /* 这是一个气泡图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: red; /* 点击评论按钮时填充为红色 */
+	}
 	.background {
 		/* background-image: url('https://tuapi.eees.cc/api.php?category=dongman&type=302&px=pc'); */
 		background-size: cover;

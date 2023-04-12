@@ -4,10 +4,29 @@
 		color: #666;
 		margin-left: 5px;
 }
-
 	/* .container {
 	padding: 10rpx;
 } */
+.icon-like:before {
+		content: '\2665'; /* 这是一个心形图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: #999;
+}
+.icon-liked:before {
+		content: '\2665'; /* 这是一个心形图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: red; /* 点赞时填充为红色 */
+}
+.icon-comment:before {
+		content: '\1F4AC'; /* 这是一个气泡图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: #999;
+}
+.icon-commented:before {
+		content: '\1F4AC'; /* 这是一个气泡图标的 Unicode 码 */
+		font-size: 20px; /* 调整图标大小 */
+		color: red; /* 点击评论按钮时填充为红色 */
+}
 .background {
 		/* background-image: url('https://tuapi.eees.cc/api.php?category=dongman&type=302&px=pc'); */
 		background-size: cover;
@@ -18,7 +37,6 @@
 		border-radius: 5px;
 		box-shadow: 5px 5px 5px gray;
 }
-
 	/* .container {
 	display: flex;
 	flex-direction: column;
