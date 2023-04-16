@@ -202,7 +202,7 @@ var _default = {
               if (res.confirm) {
                 //点击符合按钮
                 uni.request({
-                  url: 'http://62dde50d.r10.cpolar.top/api/addArticle',
+                  url: 'http://localhost:8081/api/addArticle',
                   // 后端接口地址
                   method: 'POST',
                   // 请求方式
@@ -241,7 +241,7 @@ var _default = {
                 _this.isPublic = 1;
                 //点击不符合按钮
                 uni.request({
-                  url: 'http://62dde50d.r10.cpolar.top/api/addArticle',
+                  url: 'http://localhost:8081/api/addArticle',
                   // 后端接口地址
                   method: 'POST',
                   // 请求方式

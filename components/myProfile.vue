@@ -1,152 +1,166 @@
 <template>
-  <view class="container">
-    <view class="avatar-container">
-      <image class="avatar" :src="avatarUrl" mode="aspectFill"></image>
-      <view class="avatar-edit" @click="chooseImage">
-        <i class="iconfont icon-edit"></i>
-      </view>
-    </view>
-    <view class="form-field">
-      <view class="label">昵称</view>
-      <input class="input" type="text" v-model="nickname"></input>
-    </view>
-    <view class="form-field">
-      <view class="label">性别</view>
-      <radio-group @change="onGenderChange" :value="gender">
-        <radio class="radio" value="male">男</radio>
-        <radio class="radio" value="female">女</radio>
-      </radio-group>
-    </view>
-  </view>
+	<view class="container">
+		<form class="form-box">
+			<view class="avatar-box">
+				<image
+					:src="avatar"
+					class="avatar-img" />
+				<view
+					class="upload-avatar"
+					@click="uploadAvatar">
+					上传头像
+				</view>
+			</view>
+
+			<view class="input-box">
+				<input
+					type="text"
+					v-model="nickname"
+					placeholder="请输入昵称" />
+			</view>
+
+			<view class="input-box">
+				<input
+					type="text"
+					v-model="gender"
+					placeholder="请输入性别" />
+			</view>
+
+			<view class="btn-box">
+				<button
+					class="confirm-btn"
+					@click="confirm">
+					确定
+				</button>
+			</view>
+		</form>
+	</view>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      avatarUrl: '',     // 头像地址
-      nickname: '',      // 昵称
-      gender: 'male',    // 性别
-    }
-  },
-
-  methods: {
-    // 点击修改头像
-    chooseImage() {
-      uni.chooseImage({
-        count: 1,         // 只允许选择一张图片
-        success: (res) => {
-          const tempFilePaths = res.tempFilePaths
-          this.uploadImage(tempFilePaths[0])
-        }
-      })
-    },
-
-    // 上传图片
-    uploadImage(filePath) {
-      uni.uploadFile({
-        url: 'https://example.com/upload',   // 上传接口地址
-        filePath: filePath,
-        name: 'file',
-        success: (res) => {
-          const data = JSON.parse(res.data)
-          if (data.code === 1) {
-            this.avatarUrl = data.url
-          } else {
-            uni.showToast({
-              icon: 'none',
-              title: '上传失败，请重试！'
-            })
-          }
-        },
-        fail: (res) => {
-          uni.showToast({
-            icon: 'none',
-            title: '上传失败，请重试！'
-          })
-        }
-      })
-    },
-
-    // 切换性别
-    onGenderChange(event) {
-      this.gender = event.currentTarget.dataset.name
-    },
-  },
-
-  mounted() {
-    // 页面加载时获取用户信息
-    this.avatarUrl = 'https://example.com/avatar.jpg'   // TODO: 获取当前用户头像地址
-    this.nickname = '张三'   // TODO: 获取当前用户昵称
-    this.gender = 'male'      // TODO: 获取当前用户性别
-  }
-}
+	export default {
+		data() {
+			return {
+				nickname: '', // 昵称
+				gender: '', // 性别
+				avatar: '' // 头像
+			}
+		},
+		onLoad(options){
+			this.avatar = options.avatarUrl
+			this.nickname = options.nickname
+			this.gender = options.gender
+		},
+		methods: {
+			// 上传头像
+			uploadAvatar() {
+				uni.chooseImage({
+					count: 1,
+					sizeType: ['compressed'],
+					sourceType: ['album', 'camera'],
+					success: res => {
+						this.avatar = res.tempFilePaths[0]
+					}
+				})
+			},
+			// 点击确定按钮
+			confirm() {
+				console.log('昵称：', this.nickname)
+				console.log('性别：', this.gender)
+				console.log('头像：', this.avatar)
+				// TODO: 提交表单，发送请求
+			}
+		}
+	}
 </script>
 
-<style lang="scss">
-.container {
-  padding: 20rpx;
-}
+<style scoped>
+	.container {
+		margin-top: 60px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		background-color: #eee;
+	}
 
-.avatar-container {
-  position: relative;
-  width: 100%;
-  height: 160rpx;
-  margin-bottom: 40rpx;
-}
+	.form-box {
+		width: 80vw;
+		max-width: 400px;
+		height: auto;
+		border: 2px solid #ddd;
+		border-radius: 10px;
+		background-color: #fff;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
 
-.avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-}
+	.avatar-box {
+		margin-left: 25px;
+		padding-bottom: 10px;
+		position: relative;
+		width: 120px;
+		height: 120px;
+	}
 
-.avatar-edit {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  background-color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+	.avatar-img {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+	}
 
-.iconfont {
-  font-size: 30rpx;
-}
+	.upload-avatar {
+		position: absolute;
+		bottom: -10px;
+		left: 0;
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+		background-color: #333;
+		color: #fff;
+		border-radius: 0 0 10px 10px;
+	}
 
-.form-field {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  height: 80rpx;
-}
+	.input-box {
+		width: 100%;
+		margin: 10px 0;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 
-.label {
-  width: 200rpx;
-  font-size: 30rpx;
-}
+	input {
+		width: 100%;
+		height: 30px;
+		border: 1px solid #ddd;
+		border-radius: 5px;
+		text-align: center;
+		font-size: 16px;
+	}
 
-.input {
-  flex-grow: 1;
-  font-size: 30rpx;
-  background-color: #f8f8f8;
-  border: none;
-  border-radius: 8rpx;
-  padding: 0 20rpx;
-}
+	.btn-box {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
 
-.radio-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  margin-top: 20rpx;
-}
+	button {
+		width: 50%;
+		height: 40px;
+		border: none;
+		border-radius: 5px;
+		font-size: 18px;
+		color: #fff;
+		background-color: #333;
+		cursor: pointer;
+	}
 
-.radio {
-  margin-right: 100rpx;
-}
+	.confirm-btn:hover {
+		background-color: #444;
+	}
 </style>

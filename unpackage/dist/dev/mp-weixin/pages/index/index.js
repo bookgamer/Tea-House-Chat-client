@@ -196,12 +196,6 @@ exports.default = void 0;
 //
 //
 //
-//
-//
-//
-//
-//
-//
 var _default = {
   data: function data() {
     return {
@@ -212,7 +206,7 @@ var _default = {
   onLoad: function onLoad(options) {
     var _this = this;
     wx.request({
-      url: 'http://62dde50d.r10.cpolar.top/index/getData',
+      url: 'http://localhost:8081/index/getData',
       success: function success(res) {
         _this.list = res.data;
       }

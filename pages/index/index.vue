@@ -12,12 +12,6 @@
 			<swiper
 				indicator-dots
 				autoplay>
-				<!-- <swiper-item>
-			  <image src="https://www.dmoe.cc/random.php" style="height: 500rpx;width: 100%; background-color: bisque;"/>
-			</swiper-item>
-			<swiper-item>
-			  <image src="https://api.vvhan.com/api/acgimg" style="height: 500rpx;width: 100%; background-color: bisque;"/>
-			</swiper-item> -->	
 			<swiper-item>
 					<image
 						src="http://imgapi.xl0408.top/index.php"
@@ -69,7 +63,7 @@
 		},
 		onLoad(options) {
 			wx.request({
-				url: 'http://62dde50d.r10.cpolar.top/index/getData',
+				url: 'http://localhost:8081/index/getData',
 				success: res => {	
 				this.list = res.data
 				}

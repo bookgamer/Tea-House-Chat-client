@@ -70,10 +70,6 @@
 		"backgroundColor": "#ffffff",
 		"list": [
 			{
-				"pagePath": "components/publishArticle",
-				"text": "测试"
-			},
-			{
 				"pagePath": "pages/index/index",
 				"text": "闲话茶楼",
 				"iconPath": "/icon/_home.png",

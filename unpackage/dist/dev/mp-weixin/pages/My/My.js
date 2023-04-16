@@ -199,6 +199,10 @@ exports.default = void 0;
 //
 //
 //
+//
+//
+//
+//
 var _default = {
   data: function data() {
     return {
@@ -214,7 +218,7 @@ var _default = {
   computed: {
     // 头像地址
     avatarUrl: function avatarUrl() {
-      return this.userInfo ? this.wxuserInfo.avatarUrl : '';
+      return this.userInfo ? this.wxuserInfo.avatarUrl : '/icon/white.png';
     }
   },
   onLoad: function onLoad() {
@@ -233,7 +237,7 @@ var _default = {
         // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
         success: function success(res) {
           uni.request({
-            url: 'http://62dde50d.r10.cpolar.top/login',
+            url: 'http://localhost:8081/login',
             method: 'POST',
             data: {
               avatarUrl: res.userInfo.avatarUrl,

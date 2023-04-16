@@ -19,8 +19,10 @@
 						<!-- 点赞 -->
 						<view class="like-count">{{ article.likes }}</view>
 					</view>
-					<button open-type="share" class="action">
-					  分享
+					<button
+						open-type="share"
+						class="action">
+						分享
 					</button>
 					<view
 						class="action"
@@ -132,13 +134,13 @@
 		},
 		onLoad(options) {
 			// 页面加载时向后端发送请求获取文章内容和评论列表
-			console.log("开始请求页面加载所需要的数据")
+			console.log('开始请求页面加载所需要的数据')
 			this.getArticle(options.id)
 			this.getCommentList(options.id)
-			this.collect(options.id)
+			this.getCollect(options.id)
 			this.getLike()
 			this.id = options.id
-			console.log("请求页面所需要的数据加载完毕")
+			console.log('请求页面所需要的数据加载完毕')
 		},
 		methods: {
 			onInput(e) {
@@ -150,7 +152,7 @@
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: `http://62dde50d.r10.cpolar.top/api/Addcomments?userId=${res.data}`,
+							url: `http://localhost:8081/api/Addcomments?userId=${res.data}`,
 							method: 'POST',
 							data: {
 								articleId: this.id,
@@ -163,7 +165,7 @@
 									icon: 'success',
 									duration: 2000
 								})
-								this.content = ""
+								this.content = ''
 								this.getCommentList(this.id)
 							},
 							fail: err => {
@@ -188,7 +190,7 @@
 			getArticle(id) {
 				// 发送请求获取文章内容
 				uni.request({
-					url: `http://62dde50d.r10.cpolar.top/api/article?id=${id}`,
+					url: `http://localhost:8081/api/article?id=${id}`,
 					success: res => {
 						// 请求成功则将文章内容赋值给 article 变量，同时将 loading 变量置为 false
 						this.article = res.data
@@ -206,7 +208,7 @@
 					key: 'userId',
 					success: res1 => {
 						uni.request({
-							url: `http://62dde50d.r10.cpolar.top/api/comments?id=${id}&userId=${res1.data}`,
+							url: `http://localhost:8081/api/comments?id=${id}&userId=${res1.data}`,
 							success: res => {
 								res.data.forEach(item => {
 									// 获取每个对象中的time字段
@@ -241,9 +243,9 @@
 							}
 						})
 					},
-					fail:err => {
+					fail: err => {
 						uni.request({
-							url: `http://62dde50d.r10.cpolar.top/api/comments?id=${id}&userId=0`,
+							url: `http://localhost:8081/api/comments?id=${id}&userId=0`,
 							success: res => {
 								res.data.forEach(item => {
 									// 获取每个对象中的time字段
@@ -285,7 +287,7 @@
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: 'http://62dde50d.r10.cpolar.top/api/like',
+							url: 'http://localhost:8081/api/like',
 							method: 'POST',
 							data: {
 								articleId: this.id,
@@ -318,7 +320,7 @@
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: 'http://62dde50d.r10.cpolar.top/api/like',
+							url: 'http://localhost:8081/api/like',
 							method: 'GET',
 							data: {
 								articleId: this.id,
@@ -345,31 +347,73 @@
 			share() {
 				// 分享
 				// 这里使用uni-app的分享功能，将文章内容进行分享
-				 let that = this;
-				  return {
-				    title: that.article.title,
-				    imageUrl: that.article.src,
-				    path: '/pages/article/index?id=' + that.id,
-				  }
+				let that = this
+				return {
+					title: that.article.title,
+				 imageUrl: that.article.src,
+					path: '/pages/article/index?id=' + that.id
+				}
 			},
-			collect(id) {
-				console.log('发送收藏请求，id:' + id)
-				uni.request({
-					url: 'http://62dde50d.r10.cpolar.top/api/collect',
-					method: 'POST',
-					data: {
-						id: id
-					},
-					success: res => {
-						console.log('收藏成功，响应结果：', res)
-						if (this.isCollected) {
-							this.isCollected = false
-						} else {
-							this.isCollected = true
-						}
+			collect() {
+				wx.getStorage({
+					key: 'userId',
+					success: res1 => {
+						uni.request({
+							url: 'http://localhost:8081/api/collect',
+							method: 'POST',
+							data: {
+								articleId: this.id,
+								userId: res1.data
+							},
+							success: res => {
+								this.isCollected = res.data
+								if(res.data===true){
+									console.log("收藏成功！")
+								}else{
+									console.log("取消收藏成功！")
+								}
+								
+							},
+							fail: err => {
+								console.log('收藏失败，错误信息：', err)
+							}
+						})
 					},
 					fail: err => {
-						console.log('收藏失败，错误信息：', err)
+						uni.showToast({
+							title: '请登录',
+							icon: 'none',
+							duration: 2000
+						})
+					}
+				})
+			},
+			getCollect(id){
+				wx.getStorage({
+					key: 'userId',
+					success: res1 => {
+						uni.request({
+							url: 'http://localhost:8081/api/getCollect',
+							method: 'GET',
+							data: {
+								articleId: id,
+								userId: res1.data
+							},
+							success: res => {
+								console.log('查询收藏成功，响应结果：', res)
+								this.isCollected = res.data
+							},
+							fail: err => {
+								console.log('查询收藏失败，错误信息：', err)
+							}
+						})
+					},
+					fail: err => {
+					uni.showToast({
+							title: '请登录',
+							icon: 'none',
+							duration: 2000
+						})
 					}
 				})
 			},
@@ -378,7 +422,7 @@
 					key: 'userId',
 					success: res => {
 						uni.request({
-							url: 'http://62dde50d.r10.cpolar.top/api/CommentLikes',
+							url: 'http://localhost:8081/api/CommentLikes',
 							method: 'POST',
 							data: {
 								commentId: comment.id,

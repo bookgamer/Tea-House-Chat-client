@@ -276,6 +276,8 @@ exports.default = void 0;
 //
 //
 //
+//
+//
 var _default = {
   data: function data() {
     return {
@@ -296,13 +298,13 @@ var _default = {
   },
   onLoad: function onLoad(options) {
     // 页面加载时向后端发送请求获取文章内容和评论列表
-    console.log("开始请求页面加载所需要的数据");
+    console.log('开始请求页面加载所需要的数据');
     this.getArticle(options.id);
     this.getCommentList(options.id);
-    this.collect(options.id);
+    this.getCollect(options.id);
     this.getLike();
     this.id = options.id;
-    console.log("请求页面所需要的数据加载完毕");
+    console.log('请求页面所需要的数据加载完毕');
   },
   methods: {
     onInput: function onInput(e) {
@@ -315,7 +317,7 @@ var _default = {
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: "http://62dde50d.r10.cpolar.top/api/Addcomments?userId=".concat(res.data),
+            url: "http://localhost:8081/api/Addcomments?userId=".concat(res.data),
             method: 'POST',
             data: {
               articleId: _this.id,
@@ -328,7 +330,7 @@ var _default = {
                 icon: 'success',
                 duration: 2000
               });
-              _this.content = "";
+              _this.content = '';
               _this.getCommentList(_this.id);
             },
             fail: function fail(err) {
@@ -354,7 +356,7 @@ var _default = {
       var _this2 = this;
       // 发送请求获取文章内容
       uni.request({
-        url: "http://62dde50d.r10.cpolar.top/api/article?id=".concat(id),
+        url: "http://localhost:8081/api/article?id=".concat(id),
         success: function success(res) {
           // 请求成功则将文章内容赋值给 article 变量，同时将 loading 变量置为 false
           _this2.article = res.data;
@@ -373,7 +375,7 @@ var _default = {
         key: 'userId',
         success: function success(res1) {
           uni.request({
-            url: "http://62dde50d.r10.cpolar.top/api/comments?id=".concat(id, "&userId=").concat(res1.data),
+            url: "http://localhost:8081/api/comments?id=".concat(id, "&userId=").concat(res1.data),
             success: function success(res) {
               res.data.forEach(function (item) {
                 // 获取每个对象中的time字段
@@ -410,7 +412,7 @@ var _default = {
         },
         fail: function fail(err) {
           uni.request({
-            url: "http://62dde50d.r10.cpolar.top/api/comments?id=".concat(id, "&userId=0"),
+            url: "http://localhost:8081/api/comments?id=".concat(id, "&userId=0"),
             success: function success(res) {
               res.data.forEach(function (item) {
                 // 获取每个对象中的time字段
@@ -453,7 +455,7 @@ var _default = {
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: 'http://62dde50d.r10.cpolar.top/api/like',
+            url: 'http://localhost:8081/api/like',
             method: 'POST',
             data: {
               articleId: _this4.id,
@@ -487,7 +489,7 @@ var _default = {
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: 'http://62dde50d.r10.cpolar.top/api/like',
+            url: 'http://localhost:8081/api/like',
             method: 'GET',
             data: {
               articleId: _this5.id,
@@ -521,42 +523,84 @@ var _default = {
         path: '/pages/article/index?id=' + that.id
       };
     },
-    collect: function collect(id) {
+    collect: function collect() {
       var _this6 = this;
-      console.log('发送收藏请求，id:' + id);
-      uni.request({
-        url: 'http://62dde50d.r10.cpolar.top/api/collect',
-        method: 'POST',
-        data: {
-          id: id
-        },
-        success: function success(res) {
-          console.log('收藏成功，响应结果：', res);
-          if (_this6.isCollected) {
-            _this6.isCollected = false;
-          } else {
-            _this6.isCollected = true;
-          }
+      wx.getStorage({
+        key: 'userId',
+        success: function success(res1) {
+          uni.request({
+            url: 'http://localhost:8081/api/collect',
+            method: 'POST',
+            data: {
+              articleId: _this6.id,
+              userId: res1.data
+            },
+            success: function success(res) {
+              _this6.isCollected = res.data;
+              if (res.data === true) {
+                console.log("收藏成功！");
+              } else {
+                console.log("取消收藏成功！");
+              }
+            },
+            fail: function fail(err) {
+              console.log('收藏失败，错误信息：', err);
+            }
+          });
         },
         fail: function fail(err) {
-          console.log('收藏失败，错误信息：', err);
+          uni.showToast({
+            title: '请登录',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      });
+    },
+    getCollect: function getCollect(id) {
+      var _this7 = this;
+      wx.getStorage({
+        key: 'userId',
+        success: function success(res1) {
+          uni.request({
+            url: 'http://localhost:8081/api/getCollect',
+            method: 'GET',
+            data: {
+              articleId: id,
+              userId: res1.data
+            },
+            success: function success(res) {
+              console.log('查询收藏成功，响应结果：', res);
+              _this7.isCollected = res.data;
+            },
+            fail: function fail(err) {
+              console.log('查询收藏失败，错误信息：', err);
+            }
+          });
+        },
+        fail: function fail(err) {
+          uni.showToast({
+            title: '请登录',
+            icon: 'none',
+            duration: 2000
+          });
         }
       });
     },
     toggleLike: function toggleLike(comment) {
-      var _this7 = this;
+      var _this8 = this;
       wx.getStorage({
         key: 'userId',
         success: function success(res) {
           uni.request({
-            url: 'http://62dde50d.r10.cpolar.top/api/CommentLikes',
+            url: 'http://localhost:8081/api/CommentLikes',
             method: 'POST',
             data: {
               commentId: comment.id,
               userId: res.data
             },
             success: function success(res1) {
-              _this7.getCommentList(_this7.id);
+              _this8.getCommentList(_this8.id);
             },
             fail: function fail(err) {
               console.log('查询评论接口报错，错误信息：', err);

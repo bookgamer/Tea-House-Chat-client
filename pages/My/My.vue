@@ -33,9 +33,13 @@
 		</view>
 		<view class="link-wrapper">
 			<navigator
-				:url="'../../components/myProfile?avatarUrl='+avatarUrl"
-				class="link">
-				我的资料
+			    :url="
+			        '../../components/myProfile?avatarUrl='+avatarUrl
+			        +'&nickname='+(userInfo ? wxuserInfo.nickName : '请返回登陆')
+			        +'&gender='+(userInfo ? (genderText===0?'男':'女') : 'female')
+			    "
+			    class="link">
+			    我的资料
 			</navigator>
 			<navigator
 				url="../../components/myCollection"
@@ -70,7 +74,7 @@
 		computed: {
 			// 头像地址
 			avatarUrl() {
-				return this.userInfo ? this.wxuserInfo.avatarUrl : ''
+				return this.userInfo ? this.wxuserInfo.avatarUrl : '/icon/white.png'
 			}
 		},
 		onLoad() {
@@ -87,7 +91,7 @@
 					desc: '登录本软件使用', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
 					success: res => {
 						uni.request({
-							url:'http://62dde50d.r10.cpolar.top/login',
+							url:'http://localhost:8081/login',
 							method:'POST',
 							data:{
 								avatarUrl:res.userInfo.avatarUrl,
